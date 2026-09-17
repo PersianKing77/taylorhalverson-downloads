@@ -33,8 +33,7 @@ export const RESOURCES = {
   "question-bank-ages-12-18": "CFM Questions for OT 2026.Youth Ages 12-18.Halverson.pdf",
   "question-bank-adult-sunday-school": "CFM Questions for OT 2026.Adult Sunday School.Halverson.pdf",
   "question-bank-elders-relief-society": "CFM Questions for OT 2026.Elders Quorum Relief Society.Halverson.pdf",
-  "question-bank-all-five-bundle": "CFM-Questions-for-OT-2026-FULL.pdf",
-  "question-bank-all-questions": "CFM Questions for OT 2026.All Questions.Halverson.pdf",
+  "question-bank-all-five-bundle": "CFM Questions for OT 2026.All Questions.Halverson.pdf",
 
   // --- For the Strength of Youth (FSY) ---
   "fsy-sept-oct-2026": "FSY-Teaching-Resources-2026-Sept-Oct.pdf",
