@@ -30,7 +30,7 @@ export async function checkPaidConverted(email, env) {
   const url =
     `https://api.beehiiv.com/v2/publications/${env.BEEHIIV_PUBLICATION_ID}` +
     `/subscriptions/by_email/${encodeURIComponent(email)}` +
-    `?expand[]=subscription_premium_tiers&expand[]=subscription_tags`;
+    `?expand[]=subscription_premium_tiers&expand[]=tags`;
 
   let res;
   try {
