@@ -30,8 +30,30 @@
   header {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     gap: 14px;
     margin-bottom: 8px;
+  }
+
+  .header-title {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .sign-out {
+    font-size: 13px;
+    color: var(--ink-soft);
+    text-decoration: none;
+    border: 1px solid var(--gold-line);
+    padding: 6px 14px;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+
+  .sign-out:hover {
+    color: var(--gold);
+    border-color: var(--gold);
   }
 
   header img {
@@ -112,8 +134,11 @@
 <body>
 <div class="wrap">
   <header>
-    <img src="/public-assets/logo-mark.png" alt="">
-    <h1>Teacher's Circle Downloads</h1>
+    <div class="header-title">
+      <img src="/public-assets/logo-mark.png" alt="">
+      <h1>Teacher's Circle Downloads</h1>
+    </div>
+    <a href="/api/logout" class="sign-out">Sign out</a>
   </header>
   <p class="intro">Everything below is included with your Teacher's Circle membership. Click any title to download it.</p>
 

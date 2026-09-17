@@ -1,6 +1,6 @@
 import { verifySessionToken, parseCookie, COOKIE_NAME } from "./_utils/session.js";
 
-const PUBLIC_PATHS = ["/login.html", "/login", "/api/login", "/favicon.ico"];
+const PUBLIC_PATHS = ["/login.html", "/login", "/api/login", "/api/logout", "/favicon.ico"];
 
 function isPublicPath(pathname) {
   if (PUBLIC_PATHS.includes(pathname)) return true;
