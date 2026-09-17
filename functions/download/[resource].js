@@ -36,6 +36,15 @@ export async function onRequestGet(context) {
   // session cookie for paid status (see _utils/paid-check.js).
   const result = await checkPaidConverted(session.email, env);
 
+  if (result.debug) {
+    return htmlResponse(
+      result.authorized ? "Debug: authorized" : "Debug: not authorized",
+      JSON.stringify(result.debug, null, 2),
+      200,
+      true
+    );
+  }
+
   if (!result.authorized) {
     return htmlResponse(
       "Not available yet",
@@ -64,7 +73,10 @@ export async function onRequestGet(context) {
   return Response.redirect(signedUrl, 302);
 }
 
-function htmlResponse(title, message, status) {
+function htmlResponse(title, message, status, isPre = false) {
+  const body = isPre
+    ? `<pre style="white-space:pre-wrap;word-break:break-word;font-size:13px;line-height:1.5;color:#A9B3C2;margin:0;font-family:ui-monospace,monospace;">${message}</pre>`
+    : `<p>${message}</p>`;
   const html = `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -88,7 +100,7 @@ function htmlResponse(title, message, status) {
     border: 1px solid rgba(212, 175, 90, 0.3);
     border-radius: 4px;
     padding: 40px;
-    max-width: 460px;
+    max-width: 640px;
   }
   h1 { font-size: 22px; margin: 0 0 14px; color: #ECEAE0; }
   p { font-size: 15px; line-height: 1.55; color: #A9B3C2; margin: 0; }
@@ -97,7 +109,7 @@ function htmlResponse(title, message, status) {
 <body>
   <div class="card">
     <h1>${title}</h1>
-    <p>${message}</p>
+    ${body}
   </div>
 </body>
 </html>`;
