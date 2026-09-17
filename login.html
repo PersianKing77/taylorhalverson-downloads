@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sign in — Teacher's Circle Downloads</title>
+<style>
+  :root {
+    --ink: #ECEAE0;
+    --ink-soft: #A9B3C2;
+    --gold: #D4AF5A;
+    --gold-line: rgba(212, 175, 90, 0.3);
+  }
+
+  body {
+    background: linear-gradient(160deg, #16202E 0%, #0E1520 100%);
+    min-height: 100vh;
+    margin: 0;
+    font-family: Georgia, 'Times New Roman', serif;
+  }
+
+  .login-wrap {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+
+  .login-card {
+    background: #1B2635;
+    border: 1px solid var(--gold-line);
+    border-radius: 4px;
+    box-shadow: 0 18px 50px rgba(0, 0, 0, 0.35), 0 2px 8px rgba(0, 0, 0, 0.2);
+    padding: 44px 40px 36px;
+    max-width: 440px;
+    width: 100%;
+  }
+
+  .login-card::before {
+    content: "";
+    display: block;
+    width: 56px;
+    height: 3px;
+    background: var(--gold);
+    margin: 0 0 20px;
+  }
+
+  .login-card h1 {
+    font-size: 26px;
+    color: var(--ink);
+    margin: 0 0 14px;
+    line-height: 1.25;
+  }
+
+  .login-card > p {
+    color: var(--ink-soft);
+    font-size: 15px;
+    line-height: 1.55;
+    margin: 0 0 26px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+
+  .login-blurb {
+    font-size: 13.5px;
+    color: var(--ink-soft);
+    line-height: 1.6;
+    margin: 0 0 18px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+
+  .login-card label {
+    display: block;
+    font-size: 13px;
+    color: var(--ink-soft);
+    margin-bottom: 6px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+
+  .login-card input[type="email"] {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px 14px;
+    font-size: 15px;
+    border: 1px solid #38465A;
+    border-radius: 3px;
+    margin-bottom: 18px;
+    background: #0E1520;
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+
+  .login-card button {
+    width: 100%;
+    padding: 13px 16px;
+    background: var(--ink);
+    color: #16202E;
+    border: none;
+    border-radius: 3px;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    cursor: pointer;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+
+  .login-card button:hover {
+    background: #D6D3C6;
+  }
+
+  .login-status {
+    min-height: 18px;
+    font-size: 13px;
+    margin-top: 10px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+
+  .login-status.pending { color: var(--ink-soft); }
+  .login-status.error { color: #E28A72; }
+
+  .login-foot {
+    margin-top: 26px;
+    padding-top: 20px;
+    border-top: 1px solid var(--gold-line);
+    font-size: 13px;
+    color: var(--ink-soft);
+    line-height: 1.6;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+
+  .login-foot a {
+    color: var(--gold);
+    text-decoration: underline;
+  }
+
+  .attribution {
+    text-align: left;
+    font-size: 12.5px;
+    color: var(--ink-soft);
+    margin-top: 18px;
+    letter-spacing: 0.01em;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+
+  .attribution .prepared-by {
+    color: var(--gold);
+  }
+</style>
+</head>
+<body>
+
+<div class="login-wrap">
+  <div class="login-card">
+    <h1>Teacher's Circle Downloads</h1>
+    <p class="login-blurb">This link goes straight to a resource included with your Teacher's Circle membership — a question bank, lesson set, or conference guide.</p>
+    <p>Enter the email you use for the insights.taylorhalverson.com Teacher's Circle newsletter. We'll confirm you're a paying member and send you straight to your download — no password to remember.</p>
+
+    <form id="login-form" onsubmit="return false;">
+      <label for="email">Email address</label>
+      <input type="email" id="email" name="email" placeholder="you@example.com" required autocomplete="email">
+      <button type="button" id="submit-btn">Get my download</button>
+      <div class="login-status" id="status"></div>
+    </form>
+
+    <div class="login-foot">
+      Downloads are included with a paid Teacher's Circle membership. On the free trial? This unlocks once your trial converts. Not a member yet? <a href="https://insights.taylorhalverson.com/upgrade">Join here</a>.
+    </div>
+    <div class="attribution"><span class="prepared-by">Prepared by Taylor Halverson</span></div>
+  </div>
+</div>
+
+<script>
+  const status = document.getElementById('status');
+  const btn = document.getElementById('submit-btn');
+
+  const params = new URLSearchParams(window.location.search);
+  const next = params.get('next') || '/';
+
+  async function attemptLogin(e) {
+    if (e) e.preventDefault();
+    const email = document.getElementById('email').value.trim();
+    if (!email) return;
+
+    btn.disabled = true;
+    status.textContent = 'Checking your membership…';
+    status.className = 'login-status pending';
+
+    try {
+      const res = await fetch('/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+      const data = await res.json();
+
+      if (data.ok) {
+        status.textContent = 'Confirmed — getting your download…';
+        window.location.href = next;
+      } else {
+        let message = data.error || "We couldn't verify that membership.";
+        if (data.debug) {
+          message += ' — debug: ' + JSON.stringify(data.debug);
+        }
+        status.textContent = message;
+        status.className = 'login-status error';
+        btn.disabled = false;
+      }
+    } catch (err) {
+      status.textContent = 'Something went wrong. Try again in a moment.';
+      status.className = 'login-status error';
+      btn.disabled = false;
+    }
+  }
+
+  btn.addEventListener('click', attemptLogin);
+  document.getElementById('email').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') attemptLogin(e);
+  });
+</script>
+</body>
+</html>
