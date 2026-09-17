@@ -5,32 +5,163 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Teacher's Circle Downloads</title>
 <style>
+  :root {
+    --ink: #ECEAE0;
+    --ink-soft: #A9B3C2;
+    --gold: #D4AF5A;
+    --gold-line: rgba(212, 175, 90, 0.3);
+    --card: #1B2635;
+  }
+
   body {
-    background: #0E1520;
-    color: #ECEAE0;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: linear-gradient(160deg, #16202E 0%, #0E1520 100%);
     min-height: 100vh;
     margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    color: var(--ink);
+  }
+
+  .wrap {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 48px 24px 64px;
+  }
+
+  header {
     display: flex;
     align-items: center;
-    justify-content: center;
-    padding: 24px;
+    gap: 14px;
+    margin-bottom: 8px;
   }
-  .card {
-    background: #1B2635;
-    border: 1px solid rgba(212, 175, 90, 0.3);
+
+  header img {
+    width: 36px;
+    height: 36px;
+    flex: none;
+  }
+
+  h1 {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 26px;
+    margin: 0;
+    color: var(--ink);
+  }
+
+  .intro {
+    color: var(--ink-soft);
+    font-size: 15px;
+    line-height: 1.6;
+    margin: 12px 0 36px;
+  }
+
+  .category {
+    margin-bottom: 32px;
+  }
+
+  .category h2 {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--gold);
+    margin: 0 0 12px;
+    font-weight: 600;
+  }
+
+  .item-list {
+    background: var(--card);
+    border: 1px solid var(--gold-line);
     border-radius: 4px;
-    padding: 40px;
-    max-width: 460px;
+    overflow: hidden;
   }
-  h1 { font-size: 22px; margin: 0 0 14px; color: #ECEAE0; }
-  p { font-size: 15px; line-height: 1.55; color: #A9B3C2; margin: 0; }
+
+  .item-list a {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 18px;
+    color: var(--ink);
+    text-decoration: none;
+    font-size: 15px;
+    border-bottom: 1px solid rgba(212, 175, 90, 0.12);
+    transition: background 0.15s ease;
+  }
+
+  .item-list a:last-child {
+    border-bottom: none;
+  }
+
+  .item-list a:hover {
+    background: rgba(212, 175, 90, 0.08);
+  }
+
+  .item-list a .arrow {
+    color: var(--gold);
+    flex: none;
+    margin-left: 12px;
+  }
+
+  footer {
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid var(--gold-line);
+    font-size: 13px;
+    color: var(--ink-soft);
+  }
 </style>
 </head>
 <body>
-  <div class="card">
-    <h1>You're signed in</h1>
-    <p>Downloads are sent as direct links from your email or the Teacher's Circle newsletter — there's nothing to browse here. If you were looking for a specific resource, check the link in the email or post it came from.</p>
+<div class="wrap">
+  <header>
+    <img src="/public-assets/logo-mark.png" alt="">
+    <h1>Teacher's Circle Downloads</h1>
+  </header>
+  <p class="intro">Everything below is included with your Teacher's Circle membership. Click any title to download it.</p>
+
+  <div class="category">
+    <h2>April 2026 Conference — Teacher Circle</h2>
+    <div class="item-list">
+      <a href="/download/april-2026-saturday-morning">Saturday Morning Session <span class="arrow">→</span></a>
+      <a href="/download/april-2026-saturday-afternoon">Saturday Afternoon Session <span class="arrow">→</span></a>
+      <a href="/download/april-2026-sunday-morning">Sunday Morning Session <span class="arrow">→</span></a>
+      <a href="/download/april-2026-sunday-afternoon">Sunday Afternoon Session <span class="arrow">→</span></a>
+      <a href="/download/april-2026-all-sessions-bundle">All Sessions Bundle <span class="arrow">→</span></a>
+      <a href="/download/april-2026-learners-guide">Learner's Guide <span class="arrow">→</span></a>
+    </div>
   </div>
+
+  <div class="category">
+    <h2>April 2026 Conference — Learner Group</h2>
+    <div class="item-list">
+      <a href="/download/april-2026-learner-saturday-morning">Saturday Morning Session <span class="arrow">→</span></a>
+      <a href="/download/april-2026-learner-saturday-afternoon">Saturday Afternoon Session <span class="arrow">→</span></a>
+      <a href="/download/april-2026-learner-sunday-morning">Sunday Morning Session <span class="arrow">→</span></a>
+      <a href="/download/april-2026-learner-sunday-afternoon">Sunday Afternoon Session <span class="arrow">→</span></a>
+    </div>
+  </div>
+
+  <div class="category">
+    <h2>Old Testament 2026 Question Banks</h2>
+    <div class="item-list">
+      <a href="/download/question-bank-ages-3-7">Ages 3–7 <span class="arrow">→</span></a>
+      <a href="/download/question-bank-ages-8-11">Ages 8–11 <span class="arrow">→</span></a>
+      <a href="/download/question-bank-ages-12-18">Ages 12–18 <span class="arrow">→</span></a>
+      <a href="/download/question-bank-adult-sunday-school">Adult Sunday School <span class="arrow">→</span></a>
+      <a href="/download/question-bank-elders-relief-society">Elders Quorum / Relief Society <span class="arrow">→</span></a>
+      <a href="/download/question-bank-all-five-bundle">All Five Groups — Full Bundle <span class="arrow">→</span></a>
+      <a href="/download/question-bank-all-questions">All Questions (single file) <span class="arrow">→</span></a>
+    </div>
+  </div>
+
+  <div class="category">
+    <h2>For the Strength of Youth</h2>
+    <div class="item-list">
+      <a href="/download/fsy-sept-oct-2026">The Twenty-Minute FSY Lesson &amp; Question Bank (Sept–Oct 2026) <span class="arrow">→</span></a>
+    </div>
+  </div>
+
+  <footer>
+    Prepared by Taylor Halverson, Ph.D. — if a download isn't working, reply to any Teacher's Circle email and we'll sort it out.
+  </footer>
+</div>
 </body>
 </html>
