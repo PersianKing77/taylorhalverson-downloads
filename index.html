@@ -11,6 +11,9 @@
     --gold: #D4AF5A;
     --gold-line: rgba(212, 175, 90, 0.3);
     --card: #1B2635;
+    --highlight-bg: #F5D949;
+    --highlight-bg-hover: #F0CE2E;
+    --highlight-arrow: #1E5FC4;
   }
 
   body {
@@ -122,6 +125,43 @@
     margin-left: 12px;
   }
 
+  /* Featured "get everything" rows */
+  .item-list a.featured {
+    background: #A47A19;
+    border-left: 4px solid #7A5A10;
+    padding-left: 14px;
+    color: #F5E8C8;
+    font-weight: 700;
+  }
+
+  .item-list a.featured .badge {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: #F5DFA0;
+    background: #16202E;
+    border: 1px solid rgba(22, 32, 46, 0.4);
+    border-radius: 3px;
+    padding: 3px 8px;
+    margin-left: 10px;
+  }
+
+  .item-list a.featured .title-wrap {
+    display: flex;
+    align-items: center;
+  }
+
+  .item-list a.featured:hover {
+    background: #B68B24;
+  }
+
+  .item-list a.featured .arrow {
+    color: #F5E8C8;
+    font-weight: 900;
+    font-size: 17px;
+  }
+
   footer {
     margin-top: 40px;
     padding-top: 20px;
@@ -140,12 +180,12 @@
     </div>
     <a href="/api/logout" class="sign-out">Sign out</a>
   </header>
-  <p class="intro">Everything below is included with your Teacher's Circle membership. Click any title to download it.</p>
+  <p class="intro">Everything below is included with your Teacher's Circle membership. Click any title to download the PDF digital copy.</p>
 
   <div class="category">
     <h2>April 2026 Conference — Teacher Circle</h2>
     <div class="item-list">
-      <a href="/download/april-2026-all-sessions-bundle">All Sessions Bundle <span class="arrow">→</span></a>
+      <a href="/download/april-2026-all-sessions-bundle" class="featured"><span class="title-wrap">All Sessions Bundle <span class="badge">Get everything</span></span> <span class="arrow">→</span></a>
       <a href="/download/april-2026-saturday-morning">Saturday Morning Session <span class="arrow">→</span></a>
       <a href="/download/april-2026-saturday-afternoon">Saturday Afternoon Session <span class="arrow">→</span></a>
       <a href="/download/april-2026-sunday-morning">Sunday Morning Session <span class="arrow">→</span></a>
@@ -156,7 +196,7 @@
   <div class="category">
     <h2>April 2026 Conference — Learner Group</h2>
     <div class="item-list">
-      <a href="/download/april-2026-learners-guide">Learner Guide — All Sessions <span class="arrow">→</span></a>
+      <a href="/download/april-2026-learners-guide" class="featured"><span class="title-wrap">Learner Guide — All Sessions <span class="badge">Get everything</span></span> <span class="arrow">→</span></a>
       <a href="/download/april-2026-learner-saturday-morning">Saturday Morning Session <span class="arrow">→</span></a>
       <a href="/download/april-2026-learner-saturday-afternoon">Saturday Afternoon Session <span class="arrow">→</span></a>
       <a href="/download/april-2026-learner-sunday-morning">Sunday Morning Session <span class="arrow">→</span></a>
@@ -167,7 +207,7 @@
   <div class="category">
     <h2>Old Testament 2026 Question Banks</h2>
     <div class="item-list">
-      <a href="/download/question-bank-all-five-bundle">All Questions for All Groups <span class="arrow">→</span></a>
+      <a href="/download/question-bank-all-five-bundle" class="featured"><span class="title-wrap">All Questions for All Groups <span class="badge">Get everything</span></span> <span class="arrow">→</span></a>
       <a href="/download/question-bank-ages-3-7">Ages 3–7 <span class="arrow">→</span></a>
       <a href="/download/question-bank-ages-8-11">Ages 8–11 <span class="arrow">→</span></a>
       <a href="/download/question-bank-ages-12-18">Ages 12–18 <span class="arrow">→</span></a>
