@@ -2,18 +2,20 @@
 // active Teacher's Circle subscriber" — that's intentionally loose, because
 // it also gates the 10 free interactive tools and trial members should get
 // those. Paid PDF downloads need a STRICTER check: genuinely converted to
-// paying, not just on the 30-day free trial. That distinction lives in the
-// `tc-paid-converted` subscriber tag, which two tenure automations apply
-// after 30 days of paying (one for Teacher's Circle, one for Insights
-// Ultimate, since Ultimate is meant to include Teacher's Circle access too
-// — see [[renewal-checkin-automations]] for how the tag gets set; this file
-// only reads it).
+// paying, not just on the 30-day free trial. That distinction lives in a
+// subscriber tag — `tc-paid-converted` for Teacher's Circle, and its own
+// dedicated `insights-ultimate-paid-converted` for Insights Ultimate (since
+// Ultimate is meant to include Teacher's Circle access too, but keeping the
+// tags separate avoids stacking two tags on one subscriber). Either tag
+// unlocks downloads. Two tenure automations apply these after 30 days of
+// paying — see [[renewal-checkin-automations]] for how the tags get set;
+// this file only reads them.
 //
 // This check always hits Beehiiv live — it does NOT trust the session
 // cookie for paid status, because the cookie only proves "was an active
 // subscriber at some point in the last 30 days," not "is paying today."
 
-const PAID_TAG = "tc-paid-converted";
+const PAID_TAGS = ["tc-paid-converted", "insights-ultimate-paid-converted"];
 const ACTIVE_STATUSES = ["active", "validating"];
 const UPGRADE_URL = "https://insights.taylorhalverson.com/products";
 
@@ -72,7 +74,7 @@ export async function checkPaidConverted(email, env) {
     (subscription.subscriptions || []).flatMap((s) => s.tags || []) ||
     [];
   const tagNames = rawTags.map((t) => (typeof t === "string" ? t : t && t.name) || "").map((t) => t.toLowerCase());
-  const hasPaidTag = tagNames.includes(PAID_TAG);
+  const hasPaidTag = PAID_TAGS.some((tag) => tagNames.includes(tag));
 
   const authorized = isActive && hasPaidTag;
 
@@ -86,11 +88,6 @@ export async function checkPaidConverted(email, env) {
   if (!authorized) {
     return {
       authorized: false,
-      // Thoughtful, not a dead end: explains what's needed either way
-      // (already a member, still catching up vs. not a member yet, here's
-      // how) and gives an actual path to act on it. Styled as a link here;
-      // functions/download/[resource].js renders this straight into the
-      // page as HTML.
       reason:
         "This download is part of Teacher's Circle. If you're already a Teacher's Circle or Insights Ultimate member, " +
         "it unlocks automatically once your subscription is confirmed as paying — usually within a few weeks of upgrading. " +
