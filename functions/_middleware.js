@@ -36,6 +36,11 @@ import { COOKIE_NAME, verifySessionToken } from "./_utils/session.js";
 
 const SKIP_EXTENSIONS = /\.(css|js|mjs|json|map|png|jpe?g|gif|svg|webp|ico|woff2?|ttf|eot|txt|xml|webmanifest)$/i;
 
+// This domain only has two real pages -- everything else that returns 200
+// is the SPA-style fallback (see KNOWN_PAGES usage below), which scanners
+// exploit to inflate visit counts with thousands of guessed junk paths.
+const KNOWN_PAGES = new Set(["/", "/login", "/login.html"]);
+
 // Taylor Halverson Insights publication ID. Read from the env secret
 // (BEEHIIV_PUBLICATION_ID) so this always matches whatever's actually
 // configured in Cloudflare rather than a value hardcoded here. Falls back
@@ -165,11 +170,25 @@ export async function onRequest(context) {
             }
           })()
         );
-      } else if (!SKIP_EXTENSIONS.test(url.pathname) && !url.pathname.startsWith("/_") &&
-                 request.method === "GET" && response.status === 200) {
-        // General page visits (the downloads list page, login page, etc.) --
+      } else if (
+        KNOWN_PAGES.has(url.pathname) &&
+        request.method === "GET" &&
+        response.status === 200
+      ) {
+        // General page visits (the downloads list page, login page) --
         // logged into the same shared table the resources site uses, tagged
         // by site, so you can also see overall traffic to this domain.
+        //
+        // This domain has exactly two real pages (index.html at "/" and
+        // login.html at "/login") and, like resources.taylorhalverson.com,
+        // falls back to serving index.html with a 200 for ANY unmatched
+        // path. Vulnerability/content scanners exploit that by requesting
+        // thousands of random guessed paths (.env, license.zip, wp-login.php,
+        // etc.) -- each one used to get logged as a real "visit". A single
+        // scan on 2026-09-18 logged ~11,900 fake visits this way in a few
+        // hours. Rather than trying to blocklist every possible scanner
+        // pattern (they're effectively infinite), this only logs the pages
+        // that actually exist, which a scanner's guessed paths never match.
         const row = {
           ts: new Date().toISOString(),
           site: "downloads",
