@@ -99,6 +99,46 @@ async function lookupBeehiivTier(email, env) {
   }
 }
 
+// Tag applied to a subscriber the moment they're denied a paid download
+// (status 403, "not paid-converted yet") for the SECOND time. A single
+// 403 is completely normal -- everyone sees it during their first ~90 days
+// after upgrading, before the tenure-tagging automation catches up -- but
+// two tries is Taylor's chosen bar for "this is worth reaching out about."
+// A Beehiiv automation watches for this tag and sends a one-time explainer
+// email (frequency-capped, same pattern as the account's other behavioral
+// automations) -- this function only ever adds the tag, never emails
+// anyone directly.
+const BLOCKED_TAG = "paid-download-blocked";
+
+async function tagRepeatBlockedSubscriber(email, env) {
+  if (!email || !env.BEEHIIV_API_KEY) return;
+  try {
+    const publicationId = env.BEEHIIV_PUBLICATION_ID || FALLBACK_PUBLICATION_ID;
+    const lookupUrl =
+      `https://api.beehiiv.com/v2/publications/${publicationId}` +
+      `/subscriptions/by_email/${encodeURIComponent(email)}`;
+    const lookupRes = await fetch(lookupUrl, {
+      headers: { Authorization: `Bearer ${env.BEEHIIV_API_KEY}` },
+    });
+    if (!lookupRes.ok) return;
+    const lookupJson = await lookupRes.json();
+    const subscriptionId = (lookupJson && (lookupJson.data || lookupJson) || {}).id;
+    if (!subscriptionId) return;
+
+    const tagUrl = `https://api.beehiiv.com/v2/publications/${publicationId}/subscriptions/${subscriptionId}/tags`;
+    await fetch(tagUrl, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${env.BEEHIIV_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ tags: [BLOCKED_TAG] }),
+    });
+  } catch (err) {
+    // Never let this break a real download or the analytics logging.
+  }
+}
+
 export async function onRequest(context) {
   const { request, next, env, waitUntil } = context;
   const response = await next();
@@ -167,6 +207,27 @@ export async function onRequest(context) {
                 .run();
             } catch (err) {
               // Analytics must never surface an error.
+            }
+
+            // On exactly the 2nd time this email has been denied a paid
+            // download, tag them in Beehiiv so the "paid-download-blocked"
+            // automation can send its one-time explainer email. Checked
+            // AFTER the insert above so this attempt is included in the
+            // count. Only fires once per person (count === 2, not >= 2) so
+            // a bot or someone retrying repeatedly doesn't spam this call.
+            if (status === 403 && email) {
+              try {
+                const countResult = await env.ANALYTICS_DB.prepare(
+                  `SELECT COUNT(*) AS n FROM downloads_log WHERE email = ? AND status = 403`
+                )
+                  .bind(email)
+                  .first();
+                if (countResult && countResult.n === 2) {
+                  await tagRepeatBlockedSubscriber(email, env);
+                }
+              } catch (err) {
+                // Never let this break a real download or the analytics logging.
+              }
             }
           })()
         );
