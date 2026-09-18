@@ -3,10 +3,11 @@
 // it also gates the 10 free interactive tools and trial members should get
 // those. Paid PDF downloads need a STRICTER check: genuinely converted to
 // paying, not just on the 30-day free trial. That distinction lives in the
-// `tc-paid-converted` subscriber tag, which the existing 90-day tenure
-// automation applies only once someone is confirmed paying (see
-// [[renewal-checkin-automations]] / the tenure automation for how the tag
-// gets set — this file only reads it).
+// `tc-paid-converted` subscriber tag, which two tenure automations apply
+// after 30 days of paying (one for Teacher's Circle, one for Insights
+// Ultimate, since Ultimate is meant to include Teacher's Circle access too
+// — see [[renewal-checkin-automations]] for how the tag gets set; this file
+// only reads it).
 //
 // This check always hits Beehiiv live — it does NOT trust the session
 // cookie for paid status, because the cookie only proves "was an active
@@ -14,6 +15,7 @@
 
 const PAID_TAG = "tc-paid-converted";
 const ACTIVE_STATUSES = ["active", "validating"];
+const UPGRADE_URL = "https://insights.taylorhalverson.com/products";
 
 /**
  * @param {string} email
@@ -84,7 +86,15 @@ export async function checkPaidConverted(email, env) {
   if (!authorized) {
     return {
       authorized: false,
-      reason: "That email isn't showing as a converted, paying Teacher's Circle member yet. If you're on the 30-day free trial, this unlocks once your trial converts to a paid subscription.",
+      // Thoughtful, not a dead end: explains what's needed either way
+      // (already a member, still catching up vs. not a member yet, here's
+      // how) and gives an actual path to act on it. Styled as a link here;
+      // functions/download/[resource].js renders this straight into the
+      // page as HTML.
+      reason:
+        "This download is part of Teacher's Circle. If you're already a Teacher's Circle or Insights Ultimate member, " +
+        "it unlocks automatically once your subscription is confirmed as paying — usually within a few weeks of upgrading. " +
+        `Not a member yet? You can get this resource, plus everything else in the library, by <a href="${UPGRADE_URL}" style="color:#D4AF5A;text-decoration:underline;">upgrading to Teacher's Circle or Insights Ultimate</a>.`,
     };
   }
 
