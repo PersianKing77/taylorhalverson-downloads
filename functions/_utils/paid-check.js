@@ -89,8 +89,7 @@ export async function checkPaidConverted(email, env) {
     return {
       authorized: false,
       reason:
-        "This download is part of Teacher's Circle. If you're already a Teacher's Circle or Insights Ultimate member, " +
-        "it unlocks automatically once your subscription is confirmed as paying — usually within a few weeks of upgrading. " +
+        "This download is available to paying members of Teacher's Circle or Insights Ultimate. " +
         `Not a member yet? You can get this resource, plus everything else in the library, by <a href="${UPGRADE_URL}" style="color:#D4AF5A;text-decoration:underline;">upgrading to Teacher's Circle or Insights Ultimate</a>.`,
     };
   }
