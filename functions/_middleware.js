@@ -72,7 +72,20 @@ async function lookupBeehiivTier(email, env) {
     const json = await res.json();
     const sub = json && json.data && json.data[0];
     if (!sub) return "Not subscribed";
-    const tiers = sub.subscription_premium_tier_names || [];
+    // Confirmed directly against the live Beehiiv API for this publication:
+    // tier names can come back as a `tiers` array of {id, name} objects
+    // (not just the flat `subscription_premium_tier_names` string array this
+    // originally assumed), and the name itself uses a curly apostrophe
+    // ("Teacher’s Circle") rather than a straight one. Either mismatch
+    // alone silently drops a real Teacher's Circle subscriber to "Free
+    // newsletter" -- read both possible shapes and normalize the apostrophe
+    // before comparing.
+    const rawNames = Array.isArray(sub.subscription_premium_tier_names)
+      ? sub.subscription_premium_tier_names
+      : Array.isArray(sub.tiers)
+      ? sub.tiers.map((t) => (t && t.name) || "")
+      : [];
+    const tiers = rawNames.map((n) => String(n).replace(/[‘’]/g, "'"));
     if (tiers.includes("Teacher's Circle")) return "Teacher's Circle";
     if (tiers.includes("Insights Plus")) return "Insights Plus";
     return "Free newsletter";
@@ -98,10 +111,26 @@ export async function onRequest(context) {
         // see attempts vs. actual downloads, and now who each attempt
         // belongs to and what subscriber tier they're on.
         const resource = decodeURIComponent(downloadMatch[1]);
-        const status = response.status;
+        let status = response.status;
         const country = (request.cf && request.cf.country) || null;
         const referrer = request.headers.get("referer") || null;
         const ts = new Date().toISOString();
+
+        // [resource].js redirects with the SAME 3xx status for two very
+        // different cases: "here's your signed download URL" (real success)
+        // and "you're not logged in, go to /login.html" (not a download at
+        // all). Both used to get counted as "successful" downstream since
+        // the dashboard just checks 300<=status<400. Re-tag the login-bounce
+        // case as 401 here -- before it's ever written to D1 -- so a real
+        // download and an anonymous bounce are never conflated again. This
+        // only changes what gets LOGGED; the actual redirect already sent to
+        // the visitor's browser (captured in `response` above) is untouched.
+        if (status >= 300 && status < 400) {
+          const location = response.headers.get("location") || "";
+          if (location.includes("/login.html")) {
+            status = 401;
+          }
+        }
 
         // Everything in here -- reading the session cookie, calling the
         // Beehiiv API to look up the tier, and writing the D1 row -- runs
