@@ -25,7 +25,13 @@ export async function onRequestPost(context) {
       return json({ ok: false, error: "Server isn't configured yet (missing Beehiiv credentials)." }, 500);
     }
 
-    const tierNameNeeded = (env.TEACHERS_CIRCLE_TIER_NAME || "teacher's circle").toLowerCase();
+    // Two premium tiers get into the downloads site: Teacher's Circle, and its own
+    // Insights Ultimate (which is meant to include Teacher's Circle access too — see
+    // _utils/paid-check.js for the matching PAID_TAGS list used on the actual download
+    // route). Either tier name unlocks login here; paid-check.js still does the
+    // stricter paid-vs-trial check per resource.
+    const teachersCircleTierName = (env.TEACHERS_CIRCLE_TIER_NAME || "teacher's circle").toLowerCase();
+    const insightsUltimateTierName = (env.INSIGHTS_ULTIMATE_TIER_NAME || "insights ultimate").toLowerCase();
 
     const beehiivUrl =
       `https://api.beehiiv.com/v2/publications/${env.BEEHIIV_PUBLICATION_ID}` +
@@ -68,10 +74,11 @@ export async function onRequestPost(context) {
     const rawTierNames = subscription.subscription_premium_tier_names
       || (subscription.subscription_premium_tiers || []).map((t) => (t && t.name) || t);
     const tierNames = (rawTierNames || []).map((n) => (n || "").toString().toLowerCase());
-    const hasTeachersCircle = tierNames.some((name) => name.includes(tierNameNeeded));
+    const hasTeachersCircle = tierNames.some((name) => name.includes(teachersCircleTierName));
+    const hasInsightsUltimate = tierNames.some((name) => name.includes(insightsUltimateTierName));
 
     const isActiveSubscriber = ACTIVE_STATUSES.includes(status);
-    const authorized = isActiveSubscriber && hasTeachersCircle;
+    const authorized = isActiveSubscriber && (hasTeachersCircle || hasInsightsUltimate);
 
     // DEBUG MODE — set env.DEBUG_LOGIN = "true" in Cloudflare Pages while you're first
     // wiring this up, so you can see exactly what Beehiiv sent back and confirm the
@@ -79,12 +86,12 @@ export async function onRequestPost(context) {
     if (debug) {
       return json({
         ok: authorized,
-        debug: { status, tierNames, tierNameNeeded, rawKeys: Object.keys(subscription), rawSubscription: subscription },
+        debug: { status, tierNames, teachersCircleTierName, insightsUltimateTierName, hasTeachersCircle, hasInsightsUltimate, rawKeys: Object.keys(subscription), rawSubscription: subscription },
       });
     }
 
     if (!authorized) {
-      return json({ ok: false, error: "That email isn't an active Teacher's Circle subscriber." }, 403);
+      return json({ ok: false, error: "That email isn't an active Teacher's Circle or Insights Ultimate subscriber." }, 403);
     }
 
     const token = await createSessionToken(email, env.SESSION_SECRET);
